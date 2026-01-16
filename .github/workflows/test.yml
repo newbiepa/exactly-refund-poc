@@ -34,5 +34,17 @@ jobs:
       - name: Run Forge build
         run: forge build --sizes
 
+      - name: Configure RPC endpoint
+        env:
+          OPTIMISM_RPC_URL: ${{ secrets.OPTIMISM_RPC_URL }}
+        run: |
+          if [ -n "$OPTIMISM_RPC_URL" ]; then
+            echo "Using custom RPC endpoint from secrets"
+            sed -i "s|optimism = \".*\"|optimism = \"$OPTIMISM_RPC_URL\"|" foundry.toml
+          else
+            echo "Using default RPC endpoint from foundry.toml"
+          fi
+
       - name: Run Forge tests
+        timeout-minutes: 10
         run: forge test -vvv
