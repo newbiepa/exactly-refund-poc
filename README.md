@@ -2,7 +2,7 @@
 
 ## 🚨 **Critical Vulnerability Demonstration**
 
-This repository contains a **Proof of Concept (PoC)** demonstrating a critical vulnerability in the Exactly Protocol's Exa Card payment system that causes **permanent freezing of user funds** during Uber merchant transactions.
+This repository contains a **Proof of Concept (PoC)** that analyzes balance behavior in the Exactly Protocol's Exa Card payment system using real blockchain transaction data from Optimism mainnet.
 
 ### **🎯 Vulnerability Overview**
 
@@ -20,16 +20,16 @@ The Exactly Protocol's Exa Card payment system contains a critical flaw where:
 3. **Funds remain permanently frozen** with no recovery mechanism
 4. **UI displays false "refund processed" status** while blockchain shows no refund
 
-### **Real Evidence from November 18, 2025 Uber Trip**
+### **Real Blockchain Evidence**
 
-| Transaction | Hash            | Amount    | Status                 | Days Frozen |
-| ----------- | --------------- | --------- | ---------------------- | ----------- |
-| TX A        | `0x1e6d05d4...` | $2.50 USD | ❌ FROZEN              | 17+ days    |
-| TX B        | `0xa213f943...` | $2.38 USD | ❌ FALSE UI "refunded" | 17+ days    |
-| TX C        | `0x661271ab...` | $2.41 USD | ❌ FROZEN              | 17+ days    |
+| Transaction | Hash            | Expected Amount  | PoC Demonstrates      |
+| ----------- | --------------- | ---------------- | --------------------- |
+| TX A        | `0x1e6d05d4...` | 2.301524 exaUSDC | Permanent freezing    |
+| TX B        | `0xa213f943...` | 2.191050 exaUSDC | UI shows false refund |
+| TX C        | `0x661271ab...` | 2.218667 exaUSDC | Permanent freezing    |
 
-**Total Loss**: ~$7.29 USD **permanently frozen**  
-**Protocol Settlement Offer**: $700 USD (280× loss) - _implicit bug admission_
+**PoC Focus**: Demonstrates permanent freezing behavior using real blockchain data  
+**Evidence Source**: Optimism mainnet transaction analysis
 
 ## 🔬 **Technical Details**
 
@@ -108,10 +108,10 @@ Suite result: ok. 3 passed; 0 failed; 0 skipped
 
 **Demonstrates:**
 
-- Funds burned during Collect Debit transactions
-- NO automatic refund after 1 hour, 1 day, 17 days, or months
-- Permanent user loss while protocol supply increases
-- Settlement offer as implicit bug admission
+- Balance changes across different time periods
+- Analysis of balance restoration patterns
+- Comparison between user balance and total protocol supply
+- Time-based progression of balance state
 
 ### **Test 2: False UI Display Bug**
 
@@ -119,9 +119,9 @@ Suite result: ok. 3 passed; 0 failed; 0 skipped
 
 **Demonstrates:**
 
-- UI shows "Refund processed" status
-- Blockchain reality: NO refund transaction exists
-- Misleading user interface concealing the bug
+- Analysis of specific transaction with claimed UI refund status
+- Blockchain state verification at different time periods
+- Comparison between claimed status and actual balance state
 
 ### **Test 3: Systematic Issue Pattern**
 
@@ -129,9 +129,9 @@ Suite result: ok. 3 passed; 0 failed; 0 skipped
 
 **Demonstrates:**
 
-- Consistent behavior across multiple transactions
-- Predictable permanent freezing pattern
-- No recovery mechanism across timeframes
+- Balance behavior across multiple transaction periods
+- Systematic analysis of balance changes over time
+- Consistency of balance states across different blocks
 
 ## 🔍 **Independent Verification**
 
@@ -144,39 +144,39 @@ Suite result: ok. 3 passed; 0 failed; 0 skipped
 3. **Locate Transaction A**:
 
    - Hash: `0x1e6d05d4d4ad64ba44a44cf7fc0c2dff49bd31dad3fc55c7c68d8c2e2818749b`
-   - Date: Nov 18, 2025 10:36:51 UTC-3
-   - Method: Collect Debit (burn)
+   - Block: 143937117
+   - Method: Collect Debit
 
-4. **Verify**: NO corresponding mint transaction exists after 17+ days
+4. **Verify**: PoC analyzes balance changes across different time periods
 
-5. **Repeat for Transactions B & C**
+5. **Repeat analysis for Transactions B & C**
 
 ## 📈 **Impact Analysis**
 
-### **User Impact**
+### **PoC Demonstrates**
 
-- **Financial Loss**: $7.29 USD per trip (documented case)
-- **Percentage Loss**: 99.99% of affected transactions
-- **Recovery**: None - funds permanently frozen
-- **Timeline**: Immediate loss, permanent retention
+- **Balance Analysis**: Shows permanent balance reduction over time
+- **No Recovery**: PoC demonstrates no automatic refund mechanism
+- **Timeline Tracking**: Balance remains decreased across multiple blocks
+- **UI Inconsistency**: False refund display while blockchain shows different state
 
-### **Protocol Impact**
+### **Technical Evidence**
 
-- **Systematic Issue**: Affects Uber transactions specifically (proven with real evidence)
-- **Documented Case**: 3 transactions from single Uber trip with permanent freezing
-- **Recognition**: $700 settlement offer (280× loss) indicates systematic impact
-- **Financial Impact**: Permanent user fund loss with no recovery mechanism
+- **Real Transactions**: Uses actual Optimism mainnet transaction hashes
+- **Time Progression**: Analyzes balance changes across different blocks
+- **Supply Comparison**: Protocol total supply vs individual user balance
+- **Systematic Pattern**: Consistent behavior across multiple test scenarios
 
-## 🎯 **Vulnerability Classification**
+## 🎯 **PoC Classification**
 
-| Attribute          | Classification        |
-| ------------------ | --------------------- |
-| **Severity**       | Critical              |
-| **CVSS Score**     | 9.1 (Critical)        |
-| **Impact**         | High (Financial Loss) |
-| **Exploitability** | High (Systematic)     |
-| **Affected Users** | Multiple              |
-| **Recovery**       | None                  |
+| Attribute        | Description                   |
+| ---------------- | ----------------------------- |
+| **Type**         | Balance Analysis PoC          |
+| **Evidence**     | Real blockchain transactions  |
+| **Methodology**  | Historical block analysis     |
+| **Verification** | Independent blockchain review |
+| **Tests**        | 3 comprehensive scenarios     |
+| **Network**      | Optimism Mainnet              |
 
 ## 📁 **Repository Structure**
 
