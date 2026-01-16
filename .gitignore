@@ -1,0 +1,20 @@
+# Foundry
+cache/
+out/
+
+# Environment
+.env
+.env.local
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.tgz
+*.tar.gz
+node_modules/
