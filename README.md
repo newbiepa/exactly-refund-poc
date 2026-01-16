@@ -22,17 +22,20 @@ The Exactly Protocol's Exa Card payment system contains a critical flaw where:
 
 ### **Real Blockchain Evidence**
 
-| Transaction | Hash            | Amount    | Collect Debit Burn | Corresponding Mint | Status     |
-| ----------- | --------------- | --------- | ------------------ | ------------------ | ---------- |
-| TX A        | `0x1e6d05d4...` | $2.30 USD | CONFIRMED          | MISSING            | **FROZEN** |
-| TX B        | `0xa213f943...` | $2.19 USD | CONFIRMED          | 10 days late       | Recovered  |
-| TX C        | `0x661271ab...` | $2.22 USD | CONFIRMED          | MISSING            | **FROZEN** |
+| Transaction | Hash            | Amount    | Collected Event | Burn Transfer            | Mint Recovery   | Status     |
+| ----------- | --------------- | --------- | --------------- | ------------------------ | --------------- | ---------- |
+| TX A        | `0x1e6d05d4...` | $2.50 USD | ✅ 2500000      | ✅ 2301524 → 0x000...000 | ❌ MISSING      | **FROZEN** |
+| TX B        | `0xa213f943...` | $2.38 USD | ✅ 2380000      | ✅ 2191050 → 0x000...000 | ⚠️ 10 days late | Recovered  |
+| TX C        | `0x661271ab...` | $2.41 USD | ✅ 2410000      | ✅ 2218667 → 0x000...000 | ❌ MISSING      | **FROZEN** |
 
-**Total Burned**: $6.71 USD across 3 transactions  
-**Total Recovered**: $2.19 USD (32% - manual intervention only)  
-**Total Frozen**: **$4.52 USD (68% - permanently lost)**
+**Blockchain Event Log Evidence:**
 
-**Bug Proven**: 2 out of 3 Collect Debit burns never received corresponding mint transactions
+- **"Collected" Events**: Confirm legitimate payment collections for Uber trip
+- **"Transfer to 0x000...000"**: Confirm actual exaUSDC token burns
+- **"Withdraw" Events**: Confirm USDC sent to payment processor (0x3a73880f...eFc5)
+- **Missing Mint Transactions**: TX A & C have NO corresponding mint events after burns
+
+**Total Impact**: $4.52 USD permanently frozen (68% of $6.71 burned) with **zero recovery mechanism**
 
 ## 🔬 **Technical Details**
 
@@ -49,11 +52,34 @@ The Exactly Protocol's Exa Card payment system contains a critical flaw where:
 3. **Protocol FAILS to automatically mint back exaUSDC** ❌
 4. **Funds remain permanently frozen** ❌
 
+### **Detailed Event Log Evidence**
+
+#### **Transaction A (0x1e6d05d4...) - Block 143937117**
+
+- **Collected Event**: `amount: 2500000` (payment collection confirmed)
+- **Transfer Event**: `from: 0x518E59f1... → to: 0x000...000, amount: 2301524` (BURN CONFIRMED)
+- **Withdraw Event**: `assets: 2500000, shares: 2301524, receiver: 0x3a73880ff21ABf9cA9F80B293570a3cBD846eFc5`
+- **Result**: ❌ **NO corresponding mint event found → $2.30 PERMANENTLY FROZEN**
+
+#### **Transaction B (0xa213f943...) - Block 143937132**
+
+- **Collected Event**: `amount: 2380000` (payment collection confirmed)
+- **Transfer Event**: `from: 0x518E59f1... → to: 0x000...000, amount: 2191050` (BURN CONFIRMED)
+- **Withdraw Event**: `assets: 2380000, shares: 2191050, receiver: 0x3a73880ff21ABf9cA9F80B293570a3cBD846eFc5`
+- **Result**: ⚠️ **Manual mint event 10 days later → $2.19 RECOVERED**
+
+#### **Transaction C (0x661271ab...) - Block 143937480**
+
+- **Collected Event**: `amount: 2410000` (payment collection confirmed)
+- **Transfer Event**: `from: 0x518E59f1... → to: 0x000...000, amount: 2218667` (BURN CONFIRMED)
+- **Withdraw Event**: `assets: 2410000, shares: 2218667, receiver: 0x3a73880ff21ABf9cA9F80B293570a3cBD846eFc5`
+- **Result**: ❌ **NO corresponding mint event found → $2.22 PERMANENTLY FROZEN**
+
 ### **Key Addresses (Optimism Mainnet)**
 
 - **User Wallet**: `0x518E59f1e4b44C06C7CBA5fC699b7D64092b78CC`
 - **exaUSDC Contract**: `0x6926B434CCe9b5b7966aE1BfEef6D0A7DCF3A8bb`
-- **Payment Processor**: `0x3a73880ff21ABf9cA9F80B293570a3cBD846eFc5`
+- **Payment Processor**: `0x3a73880ff21ABf9cA9F80B293570a3cBD846eFc5` (Highnote)
 
 ## 🛠 **Prerequisites**
 
@@ -153,11 +179,14 @@ Key Output:
 
    - Hash: `0x1e6d05d4d4ad64ba44a44cf7fc0c2dff49bd31dad3fc55c7c68d8c2e2818749b`
    - Block: 143937117
-   - Method: Collect Debit
+   - **Event Log 62**: `Collected(account: 0x518E59f1...., amount: 2500000)`
+   - **Event Log 66**: `Transfer(from: 0x518E59f1...., to: 0x000...000, amount: 2301524)` ← **BURN**
 
-4. **Verify**: PoC analyzes balance changes across different time periods
+4. **Verify**: Look for corresponding mint transaction after the burn
 
-5. **Repeat analysis for Transactions B & C**
+5. **Expected**: Mint event within minutes/hours | **Actual**: NO mint event found
+
+6. **Repeat for Transactions B & C with their respective event logs**
 
 ## 📈 **Impact Analysis**
 

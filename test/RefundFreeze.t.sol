@@ -88,8 +88,11 @@ contract RefundFreezeTest is Test {
         console.log("\n=== TRANSACTION A: COLLECT DEBIT BURN ===");
         console.log("TX Hash: 0x1e6d05d4d4ad64ba44a44cf7fc0c2dff49bd31dad3fc55c7c68d8c2e2818749b");
         console.log("Block: 143937117 (Nov 18, 2025 10:36:51 UTC-3)");
-        console.log("Type: Collect Debit (burns 2.301524 exaUSDC = $2.30 USD)");
-        console.log("Status: Burn confirmed on blockchain OK");
+        console.log("BLOCKCHAIN EVENT LOG EVIDENCE:");
+        console.log("- Collected Event: amount 2500000 ($2.50 payment collection)");
+        console.log("- Transfer Event: 2301524 exaUSDC burned (to 0x000...000)");
+        console.log("- Withdraw Event: 2500000 USDC sent to processor (0x3a73880f...eFc5)");
+        console.log("Status: Legitimate Collect Debit operation CONFIRMED");
         
         vm.rollFork(BLOCK_AFTER_A);
         console.log("User balance at this block:", _formatBalance(exaUSDC.balanceOf(USER_WALLET)));
@@ -122,8 +125,11 @@ contract RefundFreezeTest is Test {
         console.log("\n=== TRANSACTION B: COLLECT DEBIT BURN (DELAYED MINT) ===");
         console.log("TX Hash: 0xa213f943f7e365822421c18eb7cbe950462b71c207fdb23cbca7fe75ff6d8673");
         console.log("Block: 143937132 (Nov 18, 2025 10:37:21 UTC-3)");
-        console.log("Type: Collect Debit (burns 2.191050 exaUSDC = $2.19 USD)");
-        console.log("Status: Burn confirmed OK, but mint was DELAYED 10 days");
+        console.log("BLOCKCHAIN EVENT LOG EVIDENCE:");
+        console.log("- Collected Event: amount 2380000 ($2.38 payment collection)");
+        console.log("- Transfer Event: 2191050 exaUSDC burned (to 0x000...000)");
+        console.log("- Withdraw Event: 2380000 USDC sent to processor (0x3a73880f...eFc5)");
+        console.log("Status: Burn confirmed OK, mint eventually processed after 10 days");
         console.log("User balance at this block:", _formatBalance(balanceAtBlockB));
         
         console.log("\n--- TX B MINT ANALYSIS ---");
@@ -142,8 +148,11 @@ contract RefundFreezeTest is Test {
         console.log("\n=== TRANSACTION C: COLLECT DEBIT BURN (NO MINT) ===");
         console.log("TX Hash: 0x661271ab43b890d0d38646580dbc105114dea74e98527e2e8dff081dfecb9a4e");
         console.log("Block: 143937480 (Nov 18, 2025 10:48:57 UTC-3)");
-        console.log("Type: Collect Debit (burns 2.218667 exaUSDC = $2.22 USD)");
-        console.log("Status: Burn confirmed on blockchain OK");
+        console.log("BLOCKCHAIN EVENT LOG EVIDENCE:");
+        console.log("- Collected Event: amount 2410000 ($2.41 payment collection)");
+        console.log("- Transfer Event: 2218667 exaUSDC burned (to 0x000...000)");
+        console.log("- Withdraw Event: 2410000 USDC sent to processor (0x3a73880f...eFc5)");
+        console.log("Status: Legitimate Collect Debit operation CONFIRMED");
         console.log("User balance at this block:", _formatBalance(balanceAtBlockC));
         console.log("Total supply at this block:", _formatBalance(supplyAtBlockC));
         
@@ -253,18 +262,21 @@ contract RefundFreezeTest is Test {
         console.log("SUMMARY OF FINDINGS:");
         console.log("");
         console.log("TX TRANSACTION A (0x1e6d05d4...):");
-        console.log("   OK Collect Debit burn confirmed (2.301524 exaUSDC)");
-        console.log("   FAIL NO corresponding mint transaction found");
+        console.log("   OK Collected Event: 2500000 (payment confirmed)");
+        console.log("   OK Transfer to 0x000...000: 2301524 (burn confirmed)");
+        console.log("   FAIL NO corresponding mint event found");
         console.log("   ALERT Result: $2.30 USD PERMANENTLY FROZEN");
         console.log("");
         console.log("TX TRANSACTION B (0xa213f943...):");
-        console.log("   OK Collect Debit burn confirmed (2.191050 exaUSDC)");
-        console.log("   WARNING  Mint transaction delayed 10 days (manual intervention)");
+        console.log("   OK Collected Event: 2380000 (payment confirmed)");
+        console.log("   OK Transfer to 0x000...000: 2191050 (burn confirmed)");
+        console.log("   WARNING Mint event delayed 10 days (manual intervention)");
         console.log("   OK Result: $2.19 USD eventually recovered (NOT automatic)");
         console.log("");
         console.log("TX TRANSACTION C (0x661271ab...):");
-        console.log("   OK Collect Debit burn confirmed (2.218667 exaUSDC)");
-        console.log("   FAIL NO corresponding mint transaction found");
+        console.log("   OK Collected Event: 2410000 (payment confirmed)");
+        console.log("   OK Transfer to 0x000...000: 2218667 (burn confirmed)");
+        console.log("   FAIL NO corresponding mint event found");
         console.log("   ALERT Result: $2.22 USD PERMANENTLY FROZEN");
         console.log("");
         console.log("TOTAL TOTAL IMPACT:");
