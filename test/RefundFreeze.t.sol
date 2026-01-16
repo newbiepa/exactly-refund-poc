@@ -65,10 +65,10 @@ contract RefundFreezeTest is Test {
         uint256 balanceInitial = exaUSDC.balanceOf(USER_WALLET);
         uint256 supplyInitial = exaUSDC.totalSupply();
         
-        console.log("=== PoC: BUG DE FREEZING PERMANENTE CON EVIDENCIA REAL ===");
-        console.log("Fecha del bug: Nov 18, 2025 (Uber trip)");
-        console.log("Transacciones documentadas: TX A, B, C con hashes reales");
-        console.log("Settlement ofrecido: $700 USD (280x perdida) - admision implicita del bug");
+        console.log("=== PoC: BLOCKCHAIN BALANCE ANALYSIS ===");
+        console.log("Analysis period: Nov 18, 2025 - Jan 2026");
+        console.log("Transactions analyzed: TX A, B, C with real blockchain hashes");
+        console.log("Methodology: Historical balance tracking across multiple blocks");
         console.log("");
         console.log("Balance inicial del usuario:", _formatBalance(balanceInitial));
         console.log("Supply inicial del protocolo:", _formatBalance(supplyInitial));
@@ -81,10 +81,10 @@ contract RefundFreezeTest is Test {
         vm.rollFork(BLOCK_AFTER_A);
         uint256 balanceAfterBurnA = exaUSDC.balanceOf(USER_WALLET);
         
-        console.log("\n--- PASO 2: TX A - Primera transaccion REAL frozen ---");
+        console.log("\n--- ANALYSIS STEP 2: Transaction A Balance State ---");
         console.log("TX Hash: 0x1e6d05d4d4ad64ba44a44cf7fc0c2dff49bd31dad3fc55c7c68d8c2e2818749b");
-        console.log("Block: 143937117 | Nov 18, 2025 10:36:51 UTC-3");
-        console.log("Monto quemado esperado: ~$2.50 USD (2.301524 exaUSDC)");
+        console.log("Block: 143937117");
+        console.log("Expected amount per blockchain data: 2.301524 exaUSDC");
         console.log("Balance despues del burn:", _formatBalance(balanceAfterBurnA));
         
         uint256 burnedAmountA = 0;
@@ -111,9 +111,9 @@ contract RefundFreezeTest is Test {
         vm.rollFork(BLOCK_1HOUR_LATER);
         uint256 balance1HourLater = exaUSDC.balanceOf(USER_WALLET);
         
-        console.log("\n--- PASO 3: 1 HORA despues del burn ---");
-        console.log("Balance esperado (si hubiera refund):", _formatBalance(balanceInitial));
-        console.log("Balance actual:", _formatBalance(balance1HourLater));
+        console.log("\n--- ANALYSIS STEP 3: Balance State +1 Hour ---");
+        console.log("Baseline balance:", _formatBalance(balanceInitial));
+        console.log("Current balance:", _formatBalance(balance1HourLater));
         
         if (balance1HourLater < balanceInitial) {
             uint256 stillFrozen1Hour = balanceInitial - balance1HourLater;
@@ -159,10 +159,10 @@ contract RefundFreezeTest is Test {
         vm.rollFork(BLOCK_AFTER_C);
         uint256 balanceAfterBurnC = exaUSDC.balanceOf(USER_WALLET);
         
-        console.log("\n--- PASO 5: TX C - Tercera transaccion REAL frozen ---");
+        console.log("\n--- ANALYSIS STEP 5: Transaction C Balance State ---");
         console.log("TX Hash: 0x661271ab43b890d0d38646580dbc105114dea74e98527e2e8dff081dfecb9a4e");
-        console.log("Block: 143937480 | Nov 18, 2025 10:48:57 UTC-3");
-        console.log("Monto quemado esperado: ~$2.41 USD (2.218667 exaUSDC)");
+        console.log("Block: 143937480");
+        console.log("Expected amount per blockchain data: 2.218667 exaUSDC");
         console.log("Balance despues del segundo burn:", _formatBalance(balanceAfterBurnC));
         
         if (balanceInitial > balanceAfterBurnC) {
@@ -250,27 +250,27 @@ contract RefundFreezeTest is Test {
         // RESUMEN FINAL: DEMOSTRACION COMPLETA DEL BUG
         // ============================================================
         console.log("\n================================================");
-        console.log("=== RESUMEN: BUG DEMOSTRADO ===");
+        console.log("=== BLOCKCHAIN ANALYSIS SUMMARY ===");
         console.log("================================================");
         
-        console.log("1. FONDOS FROZEN: ", balanceCurrent < balanceInitial ? "SI" : "NO");
+        console.log("1. BALANCE STATE ANALYSIS: ", balanceCurrent < balanceInitial ? "NET DECREASE" : "NET INCREASE");
         if (balanceCurrent < balanceInitial) {
-            console.log("   - Perdida permanente:", _formatBalance(permanentLoss));
-            console.log("   - Balance NO se restauro despues de 1 hora, 1 dia, 17 dias, ni meses");
+            console.log("   - Net balance reduction:", _formatBalance(permanentLoss));
+            console.log("   - Balance remains decreased across all analyzed time periods");
         }
         
-        console.log("\n2. NO HAY DEVOLUCION AUTOMATICA: ", balanceCurrent < balanceInitial ? "SI" : "NO");
-        console.log("   - Esperado: Refund automatico en segundos/minutos");
-        console.log("   - Actual: NO hay refund despues de MESES");
+        console.log("\n2. RECOVERY PATTERN ANALYSIS: ", balanceCurrent < balanceInitial ? "NO RESTORATION" : "RESTORED");
+        console.log("   - Methodology: Multi-period balance tracking");
+        console.log("   - Observation: Balance state persists across extended timeframes");
         
-        console.log("\n3. USUARIO ES PERJUDICADO: ", balanceCurrent < balanceInitial ? "SI" : "NO");
+        console.log("\n3. PROTOCOL VS USER BALANCE DIVERGENCE: ", balanceCurrent < balanceInitial ? "CONFIRMED" : "NOT OBSERVED");
         if (balanceCurrent < balanceInitial) {
-            console.log("   - Perdida permanente:", _formatBalance(permanentLoss));
-            console.log("   - Porcentaje perdido:", _formatPercentage(permanentLoss, balanceInitial), "%");
-            console.log("   - Evidencia adicional:");
-            console.log("     * Settlement $700 ofrecido (Dec 1, 2025)");
-            console.log("     * 280x la perdida documentada");
-            console.log("     * UI muestra refunds falsos (TX B)");
+            console.log("   - Individual balance reduction:", _formatBalance(permanentLoss));
+            console.log("   - Percentage change:", _formatPercentage(permanentLoss, balanceInitial), "%");
+            console.log("   - Technical observations:");
+            console.log("     * Protocol supply shows net increase");
+            console.log("     * Individual balance shows net decrease");
+            console.log("     * UI state inconsistency documented (TX B)");
         }
         console.log("   - El protocolo continua operando (supply:", 
                    supplyCurrent > supplyInitial ? "AUMENTO" : "DISMINUYO", ")");
