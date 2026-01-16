@@ -251,13 +251,4 @@ This PoC is created for:
 
 ---
 
-## 📞 **Contact**
-
-For questions about this PoC or additional evidence:
-
-- **Bug Bounty**: Submit through official Exactly Protocol channels
-- **Security Researchers**: Contact via responsible disclosure process
-
----
-
 **⚡ This PoC demonstrates a critical vulnerability with real blockchain evidence. All transactions and amounts are verifiable on Optimism Mainnet.**
