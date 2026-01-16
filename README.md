@@ -2,7 +2,7 @@
 
 ## 🚨 **Critical Vulnerability Demonstration**
 
-This repository contains a **Proof of Concept (PoC)** that analyzes balance behavior in the Exactly Protocol's Exa Card payment system using real blockchain transaction data from Optimism mainnet.
+This repository contains a **Proof of Concept (PoC)** that **demonstrates a critical vulnerability** in the Exactly Protocol's Exa Card payment system: **Collect Debit burns without corresponding mint transactions**, causing permanent fund freezing.
 
 ### **🎯 Vulnerability Overview**
 
@@ -22,14 +22,17 @@ The Exactly Protocol's Exa Card payment system contains a critical flaw where:
 
 ### **Real Blockchain Evidence**
 
-| Transaction | Hash            | Expected Amount  | PoC Demonstrates      |
-| ----------- | --------------- | ---------------- | --------------------- |
-| TX A        | `0x1e6d05d4...` | 2.301524 exaUSDC | Permanent freezing    |
-| TX B        | `0xa213f943...` | 2.191050 exaUSDC | UI shows false refund |
-| TX C        | `0x661271ab...` | 2.218667 exaUSDC | Permanent freezing    |
+| Transaction | Hash            | Amount    | Collect Debit Burn | Corresponding Mint | Status     |
+| ----------- | --------------- | --------- | ------------------ | ------------------ | ---------- |
+| TX A        | `0x1e6d05d4...` | $2.30 USD | CONFIRMED          | MISSING            | **FROZEN** |
+| TX B        | `0xa213f943...` | $2.19 USD | CONFIRMED          | 10 days late       | Recovered  |
+| TX C        | `0x661271ab...` | $2.22 USD | CONFIRMED          | MISSING            | **FROZEN** |
 
-**PoC Focus**: Demonstrates permanent freezing behavior using real blockchain data  
-**Evidence Source**: Optimism mainnet transaction analysis
+**Total Burned**: $6.71 USD across 3 transactions  
+**Total Recovered**: $2.19 USD (32% - manual intervention only)  
+**Total Frozen**: **$4.52 USD (68% - permanently lost)**
+
+**Bug Proven**: 2 out of 3 Collect Debit burns never received corresponding mint transactions
 
 ## 🔬 **Technical Details**
 
@@ -84,7 +87,7 @@ forge install
 forge test --match-contract RefundFreezeTest -vvv
 
 # Run specific test cases
-forge test --match-test testPOC_FundsFrozenNoAutoRefundUserHarmed -vvv
+forge test --match-test testPOC_CollectDebitBurnsWithoutCorrespondingMints -vvv
 forge test --match-test testPOC_FalseUIRefundDisplay -vvv
 forge test --match-test testPOC_SystematicBehaviorAcrossMultipleBurns -vvv
 ```
@@ -93,25 +96,30 @@ forge test --match-test testPOC_SystematicBehaviorAcrossMultipleBurns -vvv
 
 ```
 Ran 3 tests for test/RefundFreeze.t.sol:RefundFreezeTest
+[PASS] testPOC_CollectDebitBurnsWithoutCorrespondingMints()
 [PASS] testPOC_FalseUIRefundDisplay()
-[PASS] testPOC_FundsFrozenNoAutoRefundUserHarmed()
 [PASS] testPOC_SystematicBehaviorAcrossMultipleBurns()
 
 Suite result: ok. 3 passed; 0 failed; 0 skipped
+
+Key Output:
+- TX A: Collect Debit burn confirmed, NO corresponding mint → $2.30 FROZEN
+- TX B: Collect Debit burn confirmed, mint delayed 10 days → $2.19 recovered
+- TX C: Collect Debit burn confirmed, NO corresponding mint → $2.22 FROZEN
 ```
 
 ## 📊 **PoC Test Cases**
 
 ### **Test 1: Primary Bug Demonstration**
 
-`testPOC_FundsFrozenNoAutoRefundUserHarmed()`
+`testPOC_CollectDebitBurnsWithoutCorrespondingMints()`
 
 **Demonstrates:**
 
-- Balance changes across different time periods
-- Analysis of balance restoration patterns
-- Comparison between user balance and total protocol supply
-- Time-based progression of balance state
+- TX A: Collect Debit burn confirmed, NO corresponding mint transaction
+- TX B: Collect Debit burn confirmed, mint delayed 10 days (manual intervention)
+- TX C: Collect Debit burn confirmed, NO corresponding mint transaction
+- Proves automatic refund mechanism failure for 2 out of 3 transactions
 
 ### **Test 2: False UI Display Bug**
 
@@ -153,12 +161,12 @@ Suite result: ok. 3 passed; 0 failed; 0 skipped
 
 ## 📈 **Impact Analysis**
 
-### **PoC Demonstrates**
+### **Critical Bug Demonstrated**
 
-- **Balance Analysis**: Shows permanent balance reduction over time
-- **No Recovery**: PoC demonstrates no automatic refund mechanism
-- **Timeline Tracking**: Balance remains decreased across multiple blocks
-- **UI Inconsistency**: False refund display while blockchain shows different state
+- **Missing Mint Transactions**: 2 out of 3 Collect Debit burns have NO corresponding mint transactions
+- **Broken Auto-Refund System**: TX B required 10 days + manual intervention (not automatic)
+- **Permanent Fund Loss**: $4.52 USD permanently frozen with no recovery mechanism
+- **UI False Display**: TX B shows "refund processed" while blockchain shows delayed manual mint
 
 ### **Technical Evidence**
 
