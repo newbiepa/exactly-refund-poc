@@ -102,6 +102,24 @@ This case contains two on-chain transactions related to a single Uber trip where
 - TX A: https://optimistic.etherscan.io/tx/0x0b874f128e60eaf28ca794c7a6328fd4acbe639af06314cd5017f19eb1378152  
 - TX B: https://optimistic.etherscan.io/tx/0x53636a1714006cc849d72b7db6e9cb4fc7677879c1b79f675cf00c10b2911d26
 
+### PoC Test Output (May 13 case)
+
+The test run against an Optimism fork produced the following concise output for the May 13 case:
+
+```
+=== PoC: MAY 13, 2025 - ADDITIONAL UBER TRIP ===
+TX A block: 135794367
+Expected amount (units): 2760000
+User balance at TX A: 146.1874
+TX B block: 135794883
+Expected amount (units): 2830000
+User balance at TX B: 146.1874
+Balance at CURRENT block: 0.0000
+Some frozen heuristic: YES
+```
+
+This output confirms the on‑chain values and the “frozen” heuristic for the disputed pre‑auth.
+
 ### **Key Addresses (Optimism Mainnet)**
 
 - **User Wallet**: `0x518E59f1e4b44C06C7CBA5fC699b7D64092b78CC`
