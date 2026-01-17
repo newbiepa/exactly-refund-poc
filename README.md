@@ -75,6 +75,33 @@ The Exactly Protocol's Exa Card payment system contains a critical flaw where:
 - **Withdraw Event**: `assets: 2410000, shares: 2218667, receiver: 0x3a73880ff21ABf9cA9F80B293570a3cBD846eFc5`
 - **Result**: ❌ **NO corresponding mint event found → $2.22 PERMANENTLY FROZEN**
 
+### **Additional Case: May 13, 2025 (Uber trip)**
+
+This case contains two on-chain transactions related to a single Uber trip where one charge is the actual invoice and the other should have been refunded but was not recovered on‑chain.
+
+- **Invoice (Uber app):** Total 2,995.00 ARS (Visa ••••3749) — Date: 2025-05-13 23:09
+- **Exchange rate (as provided):** 1 USD = 1,058.3 ARS (used for conversion check)
+
+**On‑chain transactions**
+- **TX A (pre‑auth / suspected refund)**  
+  Hash: `0x0b874f128e60eaf28ca794c7a6328fd4acbe639af06314cd5017f19eb1378152`  
+  Block: `135794367` (May 13, 2025 22:51:49)  
+  Event logs: Collected(2760000), Transfer burn → 2760000 units shown as a burn to 0x000...000, Withdraw to payment processor of ~2.76 USDC-equivalent.
+
+- **TX B (invoice / real charge)**  
+  Hash: `0x53636a1714006cc849d72b7db6e9cb4fc7677879c1b79f675cf00c10b2911d26`  
+  Block: `135794883` (May 13, 2025 23:09:02)  
+  Event logs: Collected(2830000), Transfer burn → 2830000 units, Withdraw to payment processor of ~2.83 USDC-equivalent.
+
+**Findings**
+- The on‑chain amount for **TX B** matches the Uber invoice (2,995 ARS) after exchange-rate conversion, confirming it is the real trip charge.  
+- **TX A** should have been refunded to the user wallet according to the app/UI, but **no corresponding mint/transfer back to the user** is present on‑chain — the burn remains unrecovered.  
+- Event log types present (Collected / Transfer / Withdraw) confirm legitimate protocol operations; the absence of a mint event is the on‑chain proof of permanent freezing for the disputed pre‑auth.
+
+**Verification links**
+- TX A: https://optimistic.etherscan.io/tx/0x0b874f128e60eaf28ca794c7a6328fd4acbe639af06314cd5017f19eb1378152  
+- TX B: https://optimistic.etherscan.io/tx/0x53636a1714006cc849d72b7db6e9cb4fc7677879c1b79f675cf00c10b2911d26
+
 ### **Key Addresses (Optimism Mainnet)**
 
 - **User Wallet**: `0x518E59f1e4b44C06C7CBA5fC699b7D64092b78CC`
