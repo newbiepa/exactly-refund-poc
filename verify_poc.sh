@@ -61,7 +61,7 @@ for entry in "${CASES[@]}"; do
 done
 
 echo "------------------------------------------------------------"
-echo "[*] Evidence written to $EVIDENCE_CSV"
+echo "[*] Evidence written to $EVIDENCE_CSV"  
 
 if [ "$MINTS_MISSING" -gt 0 ]; then
   echo "[!] RESULT: Some disputed burns have NO corresponding mint events (count: $MINTS_MISSING)"
